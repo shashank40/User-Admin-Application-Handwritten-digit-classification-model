@@ -1,0 +1,1 @@
+This folder is needed for temporary saving of images
