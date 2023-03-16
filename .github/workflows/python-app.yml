@@ -31,6 +31,12 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python model.py
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        branch: ${{ github.ref }}
+        directory: .
     - name: Commit back to GitHub
       run: |
         echo Commiting file to repo
@@ -39,7 +45,7 @@ jobs:
 
         git add -A
         git commit -m "Commiting new H5 file back to repo"
-        git push origin HEAD:testing_with_no_h5File
+        git push origin HEAD:${{ github.ref }}
     - name: Model testing
       run: |
         echo Started Testing
