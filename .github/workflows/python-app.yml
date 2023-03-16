@@ -31,7 +31,18 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python model.py
-        pwd
+    - name: Commit back to GitHub
+      run: |
+        echo Commiting file to repo
+        git config --global user.name "github-actiuons[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git add -A
+        git commit -m "Commiting new H5 file back to repo"
+        git push
+    - name: Commit back to GitHub
+      run: |
+        echo Started Testing
         python evaluate_model.py
     - name: Lint with flake8
       run: |
