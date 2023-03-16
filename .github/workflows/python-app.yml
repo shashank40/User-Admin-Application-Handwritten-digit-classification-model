@@ -39,8 +39,8 @@ jobs:
 
         git add -A
         git commit -m "Commiting new H5 file back to repo"
-        git push
-    - name: Commit back to GitHub
+        git push origin HEAD:testing_with_no_h5File
+    - name: Model testing
       run: |
         echo Started Testing
         python evaluate_model.py
