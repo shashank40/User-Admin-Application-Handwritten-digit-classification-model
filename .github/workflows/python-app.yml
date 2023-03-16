@@ -31,6 +31,7 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python model.py
+        pwd
         python evaluate_model.py
     - name: Lint with flake8
       run: |
