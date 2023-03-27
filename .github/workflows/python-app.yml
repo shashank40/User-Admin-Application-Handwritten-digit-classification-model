@@ -21,8 +21,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: |
-        git fetch --prune --unshallow
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
@@ -33,13 +31,16 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         python model.py
-    - name: Push changes
+    - name: Model Training
+      run: |
+        python model.py
+    - name: Authorizing to push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         branch: testing_with_no_h5File
         directory: .
-    - name: Commit back to GitHub
+    - name: Commit and Push back to GitHub Repo
       run: |
         echo Commiting file to repo
         git config --global user.name "github-actions[bot]"
@@ -58,6 +59,8 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - run: |
+      git fetch --prune --unshallow
     - name: Deploy to Heroku
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
