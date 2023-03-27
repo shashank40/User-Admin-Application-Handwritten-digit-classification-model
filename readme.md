@@ -43,7 +43,11 @@ pip3 install pipreqs
 pip3 install pip-tools
 Use the following to build a deterministic requirements.txt
 
- pipreqs --savepath=requirements.in && pip-compile
+always add libraries/dependencoes with version in requirements.in
+
+then
+
+pip-compile 
 
 
  INSTALL DEPENDENCIES
