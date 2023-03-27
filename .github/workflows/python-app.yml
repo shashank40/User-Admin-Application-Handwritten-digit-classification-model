@@ -30,11 +30,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        python model.py
     - name: Model Training
       run: |
         rm saved_model/*
-        python model.py
+        python model__prediction_and_evaluation/model.py
     - name: Authorizing to push changes
       uses: ad-m/github-push-action@master
       with:
