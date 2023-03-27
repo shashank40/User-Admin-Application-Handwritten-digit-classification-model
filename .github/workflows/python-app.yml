@@ -34,13 +34,13 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Model Training
       run: |
-        rm saved_model/*
+        rm saved_model/final_model.h5
         python model__prediction_and_evaluation/model.py
     - name: Authorizing to push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        branch: testing_with_no_h5File
+        branch: ${{ github.head_ref || github.ref_name }}
         directory: .
     - name: Commit and Push back to GitHub Repo
       run: |
@@ -50,7 +50,7 @@ jobs:
 
         git add -A
         git commit -m "Commiting new H5 file back to repo"
-        git push origin HEAD:testing_with_no_h5File
+        git push origin HEAD:${{ github.head_ref || github.ref_name }}
     - name: Model testing
       run: |
         echo Started Testing
