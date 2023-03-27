@@ -58,7 +58,7 @@ def run_test_harness():
  # fit model
  model.fit(trainX, trainY, epochs=10, batch_size=32, verbose=0)
  # save model
- model.save('final_model.h5')
+ model.save('../saved_model/final_model.h5')
  
 # entry point, run the test harness
 run_test_harness()
