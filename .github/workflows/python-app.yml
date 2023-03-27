@@ -33,13 +33,14 @@ jobs:
         python model.py
     - name: Model Training
       run: |
+        rm saved_model/*
         python model.py
     - name: Authorizing to push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         branch: testing_with_no_h5File
-        directory: .
+        directory: ./saved_model
     - name: Commit and Push back to GitHub Repo
       run: |
         echo Commiting file to repo
