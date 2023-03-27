@@ -1,4 +1,4 @@
-TO CREATE REQUIREMENTS.TXT
+TO CREATE REQUIREMENTS.TXT(Also read important.md)
 
 Kinda mind-blowing how this simple task is so complicated in Python. Here is what I think is the best way to do it automatically.
 
@@ -43,8 +43,16 @@ pip3 install pipreqs
 pip3 install pip-tools
 Use the following to build a deterministic requirements.txt
 
- pipreqs --savepath=requirements.in && pip-compile
+always add libraries/dependencoes with version in requirements.in
+
+then
+
+pip-compile 
 
 
  INSTALL DEPENDENCIES
  pip3 install -r requirements.txt
+
+
+ RUN API SERVER: (stay in root directory)
+ uvicorn main:app --reload
