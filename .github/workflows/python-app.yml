@@ -40,7 +40,7 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        branch: ${{ github.head_ref || github.ref_name }}
+        branch: testing_with_no_h5File
         directory: .
     - name: Commit and Push back to GitHub Repo
       run: |
@@ -50,7 +50,7 @@ jobs:
 
         git add -A
         git commit -m "Commiting new H5 file back to repo"
-        git push origin HEAD:${{ github.head_ref || github.ref_name }}
+        git push origin HEAD:testing_with_no_h5File
     - name: Model testing
       run: |
         echo Started Testing
