@@ -52,3 +52,7 @@ pip-compile
 
  INSTALL DEPENDENCIES
  pip3 install -r requirements.txt
+
+
+ RUN API SERVER: (stay in root directory)
+ uvicorn main:app --reload
