@@ -1,4 +1,4 @@
-TO CREATE REQUIREMENTS.TXT
+TO CREATE REQUIREMENTS.TXT(Also read important.md)
 
 Kinda mind-blowing how this simple task is so complicated in Python. Here is what I think is the best way to do it automatically.
 
