@@ -10,7 +10,9 @@ on:
     branches: [ "master" ]
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   build:
@@ -19,6 +21,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - run: |
+        git fetch --prune --unshallow
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
@@ -28,12 +32,37 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python model.py
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        branch: testing_with_no_h5File
+        directory: .
+    - name: Commit back to GitHub
+      run: |
+        echo Commiting file to repo
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git add -A
+        git commit -m "Commiting new H5 file back to repo"
+        git push origin HEAD:${{ github.ref }}
+    - name: Model testing
+      run: |
+        echo Started Testing
+        python evaluate_model.py
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}
+        HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      if: github.ref == 'refs/heads/master' && job.status == 'success'
       run: |
-        pytest
+        git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
+        git push heroku HEAD:master -f
