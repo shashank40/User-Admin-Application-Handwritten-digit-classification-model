@@ -54,7 +54,7 @@ jobs:
     - name: Model testing
       run: |
         echo Started Testing
-        python evaluate_model.py
+        python model__prediction_and_evaluation/evaluate_model.py
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
