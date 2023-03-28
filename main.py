@@ -3,13 +3,13 @@ from typing import Union
 import uvicorn
 import secrets
 from fastapi import FastAPI, UploadFile, File
-from prediction import run_example
+from model__prediction_and_evaluation.prediction import run_example
 from pydantic import BaseModel
 
 app = FastAPI()
 
 class value(BaseModel):
-    digit : int
+    digit :int
 
 
 @app.post('/prediction')
