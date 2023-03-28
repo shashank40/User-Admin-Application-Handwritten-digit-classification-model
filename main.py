@@ -9,7 +9,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 class value(BaseModel):
-    digit : int
+    digit :int
 
 
 @app.post('/prediction')
