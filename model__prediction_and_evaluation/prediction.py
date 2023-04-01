@@ -26,7 +26,7 @@ def run_example(file_name: str):
  path = 'static/'+file_name
  img = load_image(path)
  # load model
- model = load_model('final_model.h5')
+ model = load_model('saved_model/final_model.h5')
  # predict the class
  predict_value = model.predict(img)
  digit = argmax(predict_value)
