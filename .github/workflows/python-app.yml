@@ -34,6 +34,7 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Model Training
+      if: github.ref != 'refs/heads/master'
       run: |
         rm saved_model/final_model.h5
         python model__prediction_and_evaluation/model.py
@@ -44,6 +45,7 @@ jobs:
         branch: ${{ github.head_ref || github.ref_name }}
         directory: .
     - name: Commit and Push back to GitHub Repo
+      if: github.ref != 'refs/heads/master'
       run: |
         echo Commiting file to repo
         git config --global user.name "github-actions[bot]"
