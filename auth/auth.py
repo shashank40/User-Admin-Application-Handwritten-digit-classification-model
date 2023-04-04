@@ -16,11 +16,11 @@ class AuthHandler():
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def encode_token(self, user_id):
+    def encode_token(self, email):
         payload = {
             'exp': datetime.utcnow() + timedelta(days=1000000, minutes=5),
             'iat': datetime.utcnow(),
-            'sub': user_id
+            'sub': email
         }
         return jwt.encode(
             payload,
@@ -35,7 +35,7 @@ class AuthHandler():
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail='Signature has expired. Login to create new token again')
         except jwt.InvalidTokenError as e:
-            raise HTTPException(status_code=401, detail='Invalid token. Check your auth token ot create new')
+            raise HTTPException(status_code=401, detail='Invalid token. Check your auth token or create new')
 
     def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
         return self.decode_token(auth.credentials)

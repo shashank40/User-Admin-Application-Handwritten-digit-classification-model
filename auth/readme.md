@@ -13,10 +13,10 @@ Run the API with Uvicorn:
 uvicorn src.main:app --reload
 
 Register a user:
-curl --header "Content-Type: application/json" --request POST --data '{"username": "ian", "password": "secretpassword"}' localhost:8000/register
+curl --header "Content-Type: application/json" --request POST --data '{"email": "ian", "password": "secretpassword"}' localhost:8000/register
 
 Log in and get a token:
-curl --header "Content-Type: application/json" --request POST --data '{"username": "ian", "password": "secretpassword"}' localhost:8000/login
+curl --header "Content-Type: application/json" --request POST --data '{"email": "ian", "password": "secretpassword"}' localhost:8000/login
 
 Then use that token as an auth header to get a valid response from the protected endpoint:
 curl --header "Authorization: Bearer <TOKEN>" localhost:8000/protected

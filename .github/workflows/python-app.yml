@@ -33,27 +33,27 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Model Training
-      if: github.ref != 'refs/heads/master'
-      run: |
-        rm saved_model/final_model.h5
-        python model__prediction_and_evaluation/model.py
+    # - name: Model Training
+    #   if: github.ref != 'refs/heads/master'
+    #   run: |
+    #     rm saved_model/final_model.h5
+    #     python model__prediction_and_evaluation/model.py
     - name: Authorizing to push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         branch: ${{ github.head_ref || github.ref_name }}
         directory: .
-    - name: Commit and Push back to GitHub Repo
-      if: github.ref != 'refs/heads/master'
-      run: |
-        echo Commiting file to repo
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    # - name: Commit and Push back to GitHub Repo
+    #   if: github.ref != 'refs/heads/master'
+    #   run: |
+    #     echo Commiting file to repo
+    #     git config --global user.name "github-actions[bot]"
+    #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        git add -A
-        git commit -m "Commiting new H5 file back to repo"
-        git push origin HEAD:${{ github.head_ref || github.ref_name }}
+    #     git add -A
+    #     git commit -m "Commiting new H5 file back to repo"
+    #     git push origin HEAD:${{ github.head_ref || github.ref_name }}
     - name: Model testing
       run: |
         echo Started Testing
