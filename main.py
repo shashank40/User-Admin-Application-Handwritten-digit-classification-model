@@ -1,8 +1,12 @@
 from typing import Union
+import logging
 
 import uvicorn
 import secrets
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from model__prediction_and_evaluation.prediction import run_example
 from pydantic import BaseModel
 
@@ -11,46 +15,63 @@ from auth.schemas import AuthDetails
 
 app = FastAPI()
 
+templates = Jinja2Templates(directory="./web/webapp")
+app.mount("/web/static", StaticFiles(directory="./web/static"), name="static")
+
 auth_handler = AuthHandler()
 users = []
 
 class value(BaseModel):
     digit : int
 
-
 @app.get('/')
-def register():
-    return {'message': 'Head on to endpoint/docs to get all apis'}
+def landingPage():
+    url = app.url_path_for("login")
+    response = RedirectResponse(url=url)
+    return response
 
-@app.post('/register', status_code=201)
-def register(auth_details: AuthDetails):
-    if any(x['username'] == auth_details.username for x in users):
-        raise HTTPException(status_code=400, detail='Username is taken')
-    hashed_password = auth_handler.get_password_hash(auth_details.password)
-    users.append({
-        'username': auth_details.username,
-        'password': hashed_password    
-    })
-    return {'message': 'user created with for given user. Save user and password for future'
-            ,'username': auth_details.username,}
+
+@app.get('/login', response_class = HTMLResponse)
+def logPage(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post('/login')
-def login(auth_details: AuthDetails):
+def login(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_form)):
     user = None
     for x in users:
-        if x['username'] == auth_details.username:
+        if x['email'] == auth_details.email:
             user = x
             break
     
     if (user is None) or (not auth_handler.verify_password(auth_details.password, user['password'])):
-        raise HTTPException(status_code=401, detail='Invalid username and/or password')
-    token = auth_handler.encode_token(user['username'])
-    return {'message': 'Token created for the user. Save it for authorization while api utilization'
-            ,'token': token }  #returns a token that is valid for sometime(time can be changed in auth.py). This token is to be used in header for auth to use the api
+        logging.exception('Invalid email and/or password')
+        return templates.TemplateResponse("falseLogin.html", {"request": request})
+    token = auth_handler.encode_token(user['email'])
+
+    logging.info('Auth token : ' + token)
+    return templates.TemplateResponse("token.html", {"request": request, "value1": token, "email": auth_details.email})
+      #returns a token that is valid for sometime(time can be changed in auth.py). This token is to be used in header for auth to use the api
     # use this token as auth token with bearer
 
+@app.get('/signup', response_class = HTMLResponse)
+def logPage(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
+@app.post('/signup', status_code=201)
+def register(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_form)):
+    if any(x['email'] == auth_details.email for x in users):
+        logging.exception('Email is already taken')
+        return templates.TemplateResponse("falseSignup.html", {"request": request})
+
+    hashed_password = auth_handler.get_password_hash(auth_details.password)
+    users.append({
+        'email': auth_details.email,
+        'password': hashed_password    
+    })
+    return templates.TemplateResponse("signupConfirmation.html", {"request": request,  "value1" : auth_details.email})
+
 @app.post('/prediction')
-async def get_digit(username=Depends(auth_handler.auth_wrapper), file: Union[UploadFile, None] = File(...)):
+async def get_digit(email=Depends(auth_handler.auth_wrapper), file: Union[UploadFile, None] = File(...)):
     if not file:
         return {'message': 'no file uploaded'}
     elif file.content_type == 'image/png':
