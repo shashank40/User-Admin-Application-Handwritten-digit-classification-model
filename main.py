@@ -3,7 +3,7 @@ import logging
 
 import uvicorn
 import secrets
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -45,13 +45,34 @@ def login(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_
     
     if (user is None) or (not auth_handler.verify_password(auth_details.password, user['password'])):
         logging.exception('Invalid email and/or password')
-        return templates.TemplateResponse("falseLogin.html", {"request": request})
+        invalid = "Invalid email and/or password."
+        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
     token = auth_handler.encode_token(user['email'])
 
     logging.info('Auth token : ' + token)
     return templates.TemplateResponse("token.html", {"request": request, "value1": token, "email": auth_details.email})
       #returns a token that is valid for sometime(time can be changed in auth.py). This token is to be used in header for auth to use the api
     # use this token as auth token with bearer
+
+@app.get('/new-pass', response_class = HTMLResponse)
+def logPage(request: Request):
+    return templates.TemplateResponse("forgotPass.html", {"request": request})
+
+@app.post('/new-pass')
+def login(request: Request, email: str =  Form(...)):
+    user = None
+    for x in users:
+        if x['email'] == email:
+            user = x
+            break
+    
+    if (user is None) :
+        logging.exception('Invalid email')
+        invalid = "Invalid email"
+        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
+
+    invalid = "Password reset link sent to your email"
+    return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
 
 @app.get('/signup', response_class = HTMLResponse)
 def logPage(request: Request):
@@ -61,7 +82,8 @@ def logPage(request: Request):
 def register(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_form)):
     if any(x['email'] == auth_details.email for x in users):
         logging.exception('Email is already taken')
-        return templates.TemplateResponse("falseSignup.html", {"request": request})
+        invalid = "Email is already taken."
+        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
 
     hashed_password = auth_handler.get_password_hash(auth_details.password)
     users.append({
