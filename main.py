@@ -15,8 +15,8 @@ from auth.schemas import AuthDetails
 
 app = FastAPI()
 
-templates = Jinja2Templates(directory="./web/webapp")
-app.mount("/web/static", StaticFiles(directory="./web/static"), name="static")
+templates = Jinja2Templates(directory="./templates")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
 
 auth_handler = AuthHandler()
 users = []
