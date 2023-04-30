@@ -1,5 +1,8 @@
+from typing import Union
+
 from pydantic import BaseModel
 from fastapi import Form
+from fastapi import UploadFile, Form
 
 
 class AuthDetails(BaseModel):
@@ -15,4 +18,16 @@ class AuthDetails(BaseModel):
         return cls(
             email=email,
             password=password,
+        )
+    
+class Email(BaseModel):
+    email: str
+
+    @classmethod
+    def as_form(
+        cls,
+        email: str = Form(...),
+    ):
+        return cls(
+            email=email,
         )
