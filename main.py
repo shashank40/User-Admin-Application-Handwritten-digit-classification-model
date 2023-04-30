@@ -1,28 +1,23 @@
-from typing import Union
 import logging
 
 import uvicorn
 import secrets
-from fastapi import FastAPI, UploadFile, File, Depends, Form, Request
+from fastapi import FastAPI, UploadFile, File, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from model__prediction_and_evaluation.prediction import run_example
-from pydantic import BaseModel
 
-from auth.auth import AuthHandler
-from auth.schemas import AuthDetails
+from auth.schemas import AuthDetails, Email
+from auth.firebase.login.login import log_in_with_email_and_password
+from auth.firebase.signup.signup import sign_in_with_email_and_password
+from auth.firebase.change_password.changePass import SendResetEmail
 
-app = FastAPI()
+app = FastAPI(docs_url=None)
 
 templates = Jinja2Templates(directory="./templates")
 app.mount("/static", StaticFiles(directory="./static"), name="static")
 
-auth_handler = AuthHandler()
-users = []
-
-class value(BaseModel):
-    digit : int
 
 @app.get('/')
 def landingPage():
@@ -37,42 +32,24 @@ def logPage(request: Request):
 
 @app.post('/login')
 def login(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_form)):
-    user = None
-    for x in users:
-        if x['email'] == auth_details.email:
-            user = x
-            break
     
-    if (user is None) or (not auth_handler.verify_password(auth_details.password, user['password'])):
-        logging.exception('Invalid email and/or password')
-        invalid = "Invalid email and/or password."
-        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
-    token = auth_handler.encode_token(user['email'])
+    message, status = log_in_with_email_and_password(auth_details.email, auth_details.password)
+    
+    if status == False:
+        logging.exception(message)
+        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": message})
 
-    logging.info('Auth token : ' + token)
-    return templates.TemplateResponse("token.html", {"request": request, "value1": token, "email": auth_details.email})
-      #returns a token that is valid for sometime(time can be changed in auth.py). This token is to be used in header for auth to use the api
-    # use this token as auth token with bearer
+    logging.info(message)
+    return templates.TemplateResponse("token.html", {"request": request, "value1": message, "email": auth_details.email})
 
 @app.get('/new-pass', response_class = HTMLResponse)
 def logPage(request: Request):
     return templates.TemplateResponse("forgotPass.html", {"request": request})
 
 @app.post('/new-pass')
-def login(request: Request, email: str =  Form(...)):
-    user = None
-    for x in users:
-        if x['email'] == email:
-            user = x
-            break
-    
-    if (user is None) :
-        logging.exception('Invalid email')
-        invalid = "Invalid email"
-        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
-
-    invalid = "Password reset link sent to your email"
-    return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
+def login(request: Request, email: Email =  Depends(Email.as_form)):
+    message, status = SendResetEmail(email.email)
+    return templates.TemplateResponse("falseInput.html", {"request": request, "value1": message})
 
 @app.get('/signup', response_class = HTMLResponse)
 def logPage(request: Request):
@@ -80,22 +57,23 @@ def logPage(request: Request):
 
 @app.post('/signup', status_code=201)
 def register(request: Request, auth_details: AuthDetails =  Depends(AuthDetails.as_form)):
-    if any(x['email'] == auth_details.email for x in users):
-        logging.exception('Email is already taken')
-        invalid = "Email is already taken."
-        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": invalid})
+    message, status = sign_in_with_email_and_password(auth_details.email, auth_details.password)
 
-    hashed_password = auth_handler.get_password_hash(auth_details.password)
-    users.append({
-        'email': auth_details.email,
-        'password': hashed_password    
-    })
+    if status == False:
+        logging.exception(message)
+        return templates.TemplateResponse("falseInput.html", {"request": request, "value1": message})
+    
     return templates.TemplateResponse("signupConfirmation.html", {"request": request,  "value1" : auth_details.email})
 
+@app.get('/prediction', response_class = HTMLResponse)
+def predictPage(request: Request):
+    return templates.TemplateResponse("predict.html", {"request": request})
+
 @app.post('/prediction')
-async def get_digit(email=Depends(auth_handler.auth_wrapper), file: Union[UploadFile, None] = File(...)):
+async def get_digit(request: Request, file: UploadFile = File(...)):
+    value = ''
     if not file:
-        return {'message': 'no file uploaded'}
+        value = 'No file uploaded'
     elif file.content_type == 'image/png':
         # storing file at a place
         file_path = './static/'
@@ -107,10 +85,31 @@ async def get_digit(email=Depends(auth_handler.auth_wrapper), file: Union[Upload
             file.write(file_content)
             file.close()
         dig: int = run_example(new_file_name)
-        print(dig)
-        return value(digit= dig)
+        value = f'Predicted number is : {dig}'
     else:
-        return {'message': 'Invalid Image type'}
+        value = 'Invalid Image type'
+    return templates.TemplateResponse("falseInput.html", {"request": request, "value1": value})
+
+
+@app.get('/upload-updated-model', response_class = HTMLResponse)
+def predictPage(request: Request):
+    return templates.TemplateResponse("uploadUpdatedModel.html", {"request": request})
+
+@app.post('/upload-updated-model')
+async def get_digit(request: Request, file: UploadFile = File(...)):
+    value = ''
+    if not file:
+        value = 'No file uploaded'
+    elif file.filename.endswith('.h5'):
+        # storing file in firebase bucket
+        value = 'Model uploaded successfully'
+    else:
+        value = 'Invalid file type'
+    return templates.TemplateResponse("falseInput.html", {"request": request, "value1": value})
+
+@app.post('/base-model')
+async def get_digit(request: Request):
+    return {'message': 'Base model is being used'}
 
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=4000, debug=True)

@@ -56,3 +56,6 @@ pip-compile
 
  RUN API SERVER: (stay in root directory)
  uvicorn main:app --reload
+
+To remove all pycache
+find . -type d -name  "__pycache__" -exec rm -r {} +
