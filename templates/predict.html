@@ -2,19 +2,18 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Forgot Password</title>
+    <title>Predict</title>
     <link rel="stylesheet" href="../static/style.css">
   </head>
   <body>
     <div class="center">
-      <h1>Reset Password</h1>
-      <form method="post">
+      <h1>Upload image!</h1>
+      <form action="prediction" enctype="multipart/form-data" method="post" autocomplete="off">
         <div class="txt_field">
-          <input type="text" name = 'email' required>
+          <input type="file" name = 'file' required>
           <span></span>
-          <label for="email">Email</label>
         </div>
-        <input type="submit" value="Reset Password!">
+        <input type="submit" value="Predict!">
       </form>
       <br>
     </div>

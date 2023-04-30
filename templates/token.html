@@ -9,11 +9,25 @@
     <div class="center">
       <h1> Login Details</h1>
       <br>
-      <h4 class="token"> Auth token: {{value1}}</h4>
+      <h4 class="token"> Update: {{value1}}</h4>
       <br>
-      <h4> created for email : {{email}}</h4>
+      <h4> Logged in for Email : {{email}}</h4>
       <br>
-      <h4> Save this token to be used later in api header</h4>
+      <form action="/prediction" method="get">
+        <div class="signup_link">
+          Predict? <input type="submit" value="Predict!">
+        </div>
+      </form>
+      <form action="/base-model" method="post">
+        <div class="signup_link">
+          Download Base Model? <input type="submit" value="Download Base Model!">
+        </div>
+      </form>
+      <form action="/upload-updated-model" method="get">
+        <div class="signup_link">
+          Upload Updated Model?<input type="submit" value="Upload Updated Model!">
+        </div>
+      </form>
     </div>
   </body>
 </html>
