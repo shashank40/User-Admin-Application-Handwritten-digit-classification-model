@@ -2,7 +2,7 @@ from typing import Union
 
 from pydantic import BaseModel
 from fastapi import Form
-from fastapi import UploadFile, Form
+from fastapi import UploadFile, Form, File
 
 
 class AuthDetails(BaseModel):
@@ -30,4 +30,22 @@ class Email(BaseModel):
     ):
         return cls(
             email=email,
+        )
+
+class ClientUpload(BaseModel):
+    email: str
+    idToken: str
+    file: UploadFile
+
+    @classmethod
+    def as_form(
+        cls,
+        email: str = Form(...),
+        idToken: str = Form(...),
+        file: UploadFile = Form(...),
+    ):
+        return cls(
+            email=email,
+            idToken=idToken,
+            file=file,
         )
