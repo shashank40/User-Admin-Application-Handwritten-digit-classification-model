@@ -59,3 +59,6 @@ pip-compile
 
 To remove all pycache
 find . -type d -name  "__pycache__" -exec rm -r {} +
+
+
+admin token : aGVyYWt1LmxhYnNoYXJpbmdAZ21haWwuY29t

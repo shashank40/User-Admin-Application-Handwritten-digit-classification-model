@@ -37,5 +37,5 @@ def sign_in_with_email_and_password(email: str, password: str, return_secure_tok
         else:
             return 'Sucessfully Signed Up', True
     except Exception as e:
-        return 'Error in Signing Up' + e, False
+        return f'Error in Signing Up {e}', False
 
