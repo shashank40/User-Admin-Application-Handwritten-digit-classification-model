@@ -35,5 +35,3 @@ async def downloadClientModels():
 async def cleanFolder():
     path = 'temp_models/'
     os.system('rm -rf %s/*' % path)
-
-downloadClientModels()
