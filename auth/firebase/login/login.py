@@ -23,5 +23,3 @@ def log_in_with_email_and_password(email: str, password: str, return_secure_toke
             return f'Sucessfully Logged In for {email} with idToken: \n \n \n {idToken} \n \n \n Save it for future use', True
     except Exception as e:
         return f'Error in Logging Up : {e}', False
-
-log_in_with_email_and_password('tiwari.shashank408@gmail.com', 'xyz123')
