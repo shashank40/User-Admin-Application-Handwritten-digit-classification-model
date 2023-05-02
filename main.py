@@ -18,6 +18,7 @@ from auth.base64_encode.encode import encode
 from auth.firebase.admin_base_upload.admin_base_upload import baseUpload
 from auth.firebase.client_model_upload.model_upload import uploadClientModel
 from auth.firebase.all_client_model_download.client_model_download import downloadClientModels, cleanFolder
+from auth.firebase.user_exists.user_exists import account_exists
 
 app = FastAPI()
 
@@ -76,24 +77,29 @@ def predictPageGet(request: Request):
     return templates.TemplateResponse("predict.html", {"request": request})
 
 @app.post('/prediction')
-async def predictPagePost(request: Request, file: UploadFile = File(...)):
+async def predictPagePost(request: Request, clientUpload: ClientUpload = Depends(ClientUpload.as_form)):
     value = ''
-    if not file:
-        value = 'No file uploaded'
-    elif file.content_type == 'image/png':
-        # storing file at a place
-        file_path = './static/'
-        new_file_name = secrets.token_hex(10)+".png"
-        generated_name = file_path + new_file_name
-        file_content = await file.read()
+    message, status = await account_exists(clientUpload.idToken, clientUpload.email)
 
-        with open(generated_name, "wb") as file:
-            file.write(file_content)
-            file.close()
-        dig: int = run_example(new_file_name)
-        value = f'Predicted number is : {dig}'
+    if status == False:
+        value = message
     else:
-        value = 'Invalid Image type'
+        if not clientUpload.file:
+            value = 'No file uploaded'
+        elif clientUpload.file.content_type == 'image/png':
+            # storing file at a place
+            file_path = './static/'
+            new_file_name = secrets.token_hex(10)+".png"
+            generated_name = file_path + new_file_name
+            file_content = await clientUpload.file.read()
+
+            with open(generated_name, "wb") as file:
+                file.write(file_content)
+                file.close()
+            dig: int = run_example(new_file_name)
+            value = f'Predicted number is : {dig}'
+        else:
+            value = 'Invalid Image type'
     return templates.TemplateResponse("falseInput.html", {"request": request, "value1": value})
 
 

@@ -26,7 +26,9 @@ async def uploadClientModel(email: str, idToken: str, file: UploadFile):
 
             storage = firebase_storage.storage()
 
-            storage.child(f'client_model/{email}.h5').put(file.file)
+            file_name = email.replace('.','_')
+
+            storage.child(f'client_model/{file_name}.h5').put(file.file)
             return 'Upload Successful', True
 
         except Exception as e:
