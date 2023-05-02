@@ -23,7 +23,7 @@ async def downloadClientModels():
         for file in all_files:
             file_name = file.name.split('/')[1]
             if len(file_name):
-                file.download_to_filename('temp_models/'+file.name.split('/')[1]+'.h5')
+                file.download_to_filename('temp_models/'+file.name.split('/')[1])
 
         return 'Download Successful', True
 
