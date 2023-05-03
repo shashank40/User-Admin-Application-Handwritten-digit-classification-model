@@ -1,4 +1,6 @@
-TO CREATE REQUIREMENTS.TXT(Also read important.md)
+# dsci2023
+
+always remove tensorflow-intel from requirements.txt before pushing code
 
 Kinda mind-blowing how this simple task is so complicated in Python. Here is what I think is the best way to do it automatically.
 
