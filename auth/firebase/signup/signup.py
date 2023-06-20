@@ -18,7 +18,7 @@ import json
 # import os
 import requests
 
-FIREBASE_WEB_API_KEY = 'AIzaSyBMavTENGI2KJvlQRhrz9wzrvB-G4gVZ_0' 
+FIREBASE_WEB_API_KEY = 'XXXXX' 
 # os.environ.get("FIREBASE_WEB_API_KEY")
 rest_api_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp"
 

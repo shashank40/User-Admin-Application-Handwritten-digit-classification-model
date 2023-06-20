@@ -7,7 +7,7 @@ import utils.firebase.fetch.fetch as fetch
 
 def pushToFirebase(data, collection, document, objectName):
     # Use a service account.
-    cred = credentials.Certificate('auth/firebase/secret/dsci2023-firebase-adminsdk-t47pf-555db158e8.json')
+    cred = credentials.Certificate('auth/firebase/secret/XXXX.json')
 
     if data is None:
         print("data is None")

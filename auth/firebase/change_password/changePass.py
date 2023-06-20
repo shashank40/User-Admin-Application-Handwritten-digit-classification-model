@@ -1,6 +1,6 @@
 import requests
 
-apikey='AIzaSyBMavTENGI2KJvlQRhrz9wzrvB-G4gVZ_0' # the web api key
+apikey='XXXXXXX' # the web api key
 def SendResetEmail(email):
     headers = {
         'Content-Type': 'application/json',

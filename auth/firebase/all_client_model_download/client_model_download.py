@@ -5,12 +5,12 @@ import pyrebase
 async def downloadClientModels():
     try :
         config = {
-        "apiKey": "AIzaSyBMavTENGI2KJvlQRhrz9wzrvB-G4gVZ_0",
-        "authDomain": "dsci2023.firebaseapp.com",
-        "databaseURL": "https://dsci2023.firebaseio.com",
-        "projectId": "dsci2023",
-        "storageBucket": "dsci2023.appspot.com",
-        "serviceAccount": "auth/firebase/secret/dsci2023-firebase-adminsdk-t47pf-555db158e8.json",
+        "apiKey": "XXXXX",
+        "authDomain": "XXXX.firebaseapp.com",
+        "databaseURL": "XXXX",
+        "projectId": "XXXX",
+        "storageBucket": "XXXX.appspot.com",
+        "serviceAccount": "auth/firebase/secret/XXXX.json",
         }
 
         firebase_storage = pyrebase.initialize_app(config)

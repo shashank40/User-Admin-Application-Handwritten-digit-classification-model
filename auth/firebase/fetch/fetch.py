@@ -4,7 +4,7 @@ from firebase_admin import firestore
 
 def fetchFromFirebase(collection, document):
     # Use a service account.
-    cred = credentials.Certificate('auth/firebase/secret/dsci2023-firebase-adminsdk-t47pf-555db158e8.json')
+    cred = credentials.Certificate('auth/firebase/secret/XXXX.json')
 
     if not firebase_admin._apps:
         app = firebase_admin.initialize_app(cred)

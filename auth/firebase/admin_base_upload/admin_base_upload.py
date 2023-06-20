@@ -4,9 +4,9 @@ from firebase_admin import credentials, storage
 
 
 async def baseUpload():
-    cred = credentials.Certificate('auth/firebase/secret/dsci2023-firebase-adminsdk-t47pf-555db158e8.json')
+    cred = credentials.Certificate('auth/firebase/secret/XXXX.json')
 
-    app = firebase_admin.initialize_app(cred, {'storageBucket': 'dsci2023.appspot.com'})
+    app = firebase_admin.initialize_app(cred, {'storageBucket': 'XXXX.appspot.com'})
 
     # Put your local file path 
     fileName = "saved_model/final_model.h5"
